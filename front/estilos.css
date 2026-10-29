@@ -1,0 +1,18 @@
+/* Estilos propios (sin frameworks). */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body { font-family: "Segoe UI", Arial, sans-serif; background-color: #f4f6f8; color: #222; }
+
+.encabezado { background-color: #1f3a5f; color: #fff; text-align: center; padding: 20px 16px; }
+
+.menu { margin-top: 12px; display: flex; justify-content: center; gap: 16px; }
+.menu a { color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 6px; opacity: 0.8; }
+.menu a:hover, .menu a.activo { background-color: rgba(255, 255, 255, 0.2); opacity: 1; }
+
+.principal { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+
+.seccion { background-color: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); padding: 20px; }
+.seccion h2 { margin-bottom: 14px; }
+
+.tabla { width: 100%; border-collapse: collapse; }
+.tabla th, .tabla td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
