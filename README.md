@@ -1,6 +1,6 @@
 # Nombre del proyecto
 
-Sistema web para <negocio elegido>. Trabajo Final Integrador — Programación II, Ciclo 2026.
+Sistema web para Reservas De Lavadero de Autos. Trabajo Final Integrador — Programación II, Ciclo 2026.
 
 ## Integrantes y funcionalidad
 
