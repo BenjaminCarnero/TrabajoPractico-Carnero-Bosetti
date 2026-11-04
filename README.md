@@ -6,7 +6,8 @@ Sistema web para Reservas De Lavadero de Autos. Trabajo Final Integrador — Pro
 
 | Integrante | Funcionalidad (SP, service, ruta y pantalla) | Rama |
 |---|---|---|
-| | | |
+| Carnero | Reservas: listar servicios activos, buscar o crear cliente y vehículo por patente, crear turno con su detalle. Pantalla `index.html` | `rama-reservas` |
+| Bosetti | Gestión de turnos y estadísticas: listar turnos por fecha o estado, cambiar estado, ingresos por servicio, turnos por estado. Pantallas `tablero.html` y `estadisticas.html` | `rama-tablero` |
 
 ## Cómo levantar el sistema desde cero
 
