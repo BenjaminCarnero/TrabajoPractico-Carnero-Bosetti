@@ -1,4 +1,3 @@
-// Acceso a los SPs de reservas. Es el único lugar donde se ejecuta SQL de esta funcionalidad.
 import { obtenerPool, sql } from "../config/db.js";
 
 export async function listarServiciosActivos() {

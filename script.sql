@@ -203,7 +203,6 @@ BEGIN
 END;
 GO
 
-/* Devuelve el vehículo con los datos de su cliente. Si la patente no existe lanza 50404. */
 CREATE OR ALTER PROCEDURE dbo.sp_Vehiculos_BuscarPorPatente
     @Patente VARCHAR(10)
 AS
@@ -225,13 +224,6 @@ BEGIN
 END;
 GO
 
-/* Crea el turno y su detalle en una sola transacción.
-   Si la patente ya existe usa ese vehículo; si no, crea el vehículo y busca o crea al cliente
-   (mismo nombre, apellido y teléfono), para lo cual los datos del cliente y del vehículo son obligatorios.
-   @Servicios es un JSON: [{"idServicio": 1, "cantidad": 2}, ...].
-   Errores: 50001 patente vacía, 50002 fecha u hora faltante, 50003 fecha pasada, 50004 sin servicios,
-   50005 cantidad inválida, 50006 servicio inexistente o inactivo, 50007 faltan datos del cliente o vehículo,
-   50008 el vehículo ya tiene un turno en ese horario. */
 CREATE OR ALTER PROCEDURE dbo.sp_Turnos_Crear
     @Patente      VARCHAR(10),
     @Fecha        DATE,
@@ -263,7 +255,6 @@ BEGIN
     IF ISJSON(@Servicios) <> 1
         THROW 50004, N'Hay que elegir al menos un servicio.', 1;
 
-    -- Si un servicio viene repetido se suman las cantidades
     DECLARE @Detalle TABLE (ID_Servicio INT PRIMARY KEY, Cantidad INT NOT NULL);
 
     INSERT INTO @Detalle (ID_Servicio, Cantidad)
@@ -339,7 +330,6 @@ BEGIN
 
         SET @ID_Turno = SCOPE_IDENTITY();
 
-        -- El precio queda congelado en el detalle: un cambio de precio posterior no afecta turnos ya reservados
         INSERT INTO dbo.DetalleTurno (ID_Turno, ID_Servicio, Cantidad, PrecioUnitario)
         SELECT @ID_Turno, d.ID_Servicio, d.Cantidad, s.Precio
         FROM @Detalle d

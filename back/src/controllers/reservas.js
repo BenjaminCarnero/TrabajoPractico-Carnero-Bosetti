@@ -1,5 +1,3 @@
-// Traduce HTTP a llamadas al service de reservas. Las reglas de negocio las valida el SP;
-// acá solo se chequea que el pedido tenga la forma esperada para no mandar basura a la base.
 import * as reservas from "../services/reservas.js";
 
 const FORMATO_FECHA = /^\d{4}-\d{2}-\d{2}$/;
