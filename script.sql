@@ -195,6 +195,45 @@ GO
 /* ================================================== */
 /* 5. SPs DE TABLERO Y ESTADISTICAS (dueño: Bosetti)  */
 /* ================================================== */
+CREATE OR ALTER PROCEDURE dbo.sp_TurnosPorEstado
+AS
+BEGIN
+    SET NOCOUNT ON;
 
+    SELECT
+        Estado,
+        COUNT(*) AS Cantidad
+    FROM dbo.Turnos
+    GROUP BY Estado;
+END;
+GO
+CREATE OR ALTER PROCEDURE dbo.sp_ResumenTablero
+AS
+BEGIN
+    SET NOCOUNT ON;
 
+    SELECT
+        (SELECT COUNT(*) FROM dbo.Clientes) AS TotalClientes,
+        (SELECT COUNT(*) FROM dbo.Turnos) AS TotalTurnos,
+        (SELECT COUNT(*) FROM dbo.Turnos
+         WHERE Estado = 'Pendiente') AS TurnosPendientes,
+        (SELECT COUNT(*) FROM dbo.Turnos
+         WHERE Estado = 'Finalizado') AS TurnosFinalizados;
+END;
+GO
+CREATE OR ALTER PROCEDURE dbo.sp_ServiciosMasSolicitados
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        s.Nombre AS Servicio,
+        SUM(d.Cantidad) AS VecesSolicitado
+    FROM dbo.DetalleTurno d
+    INNER JOIN dbo.Servicios s
+        ON d.ID_Servicio = s.ID_Servicio
+    GROUP BY s.Nombre
+    ORDER BY VecesSolicitado DESC;
+END;
+GO
 /* (si son 3 integrantes, agregar la seccion 6 con el mismo cartel) */
