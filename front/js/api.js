@@ -13,4 +13,7 @@ async function pedirJson(url, opciones) {
 }
 
 // Las funciones exportadas de cada endpoint van acá, por ejemplo:
+export function obtenerResumenTablero() {
+    return pedirJson(`${API_URL}/estadisticas/resumen`);
+}
 // export function obtenerTurnos() { return pedirJson(`${API_URL}/turnos`); }
