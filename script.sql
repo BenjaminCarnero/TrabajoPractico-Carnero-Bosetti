@@ -356,6 +356,124 @@ GO
 /* ================================================== */
 /* 5. SPs DE TABLERO Y ESTADISTICAS (dueño: Bosetti)  */
 /* ================================================== */
+CREATE OR ALTER PROCEDURE dbo.sp_TurnosPorEstado
+AS
+BEGIN
+    SET NOCOUNT ON;
 
+    SELECT
+        Estado,
+        COUNT(*) AS Cantidad
+    FROM dbo.Turnos
+    GROUP BY Estado;
+END;
+GO
+CREATE OR ALTER PROCEDURE dbo.sp_ResumenTablero
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        (SELECT COUNT(*) FROM dbo.Clientes) AS TotalClientes,
+        (SELECT COUNT(*) FROM dbo.Turnos) AS TotalTurnos,
+        (SELECT COUNT(*) FROM dbo.Turnos
+         WHERE Estado = 'Pendiente') AS TurnosPendientes,
+        (SELECT COUNT(*) FROM dbo.Turnos
+         WHERE Estado = 'Finalizado') AS TurnosFinalizados;
+END;
+GO
+CREATE OR ALTER PROCEDURE dbo.sp_ServiciosMasSolicitados
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        s.Nombre AS Servicio,
+        SUM(d.Cantidad) AS VecesSolicitado
+    FROM dbo.DetalleTurno d
+    INNER JOIN dbo.Servicios s
+        ON d.ID_Servicio = s.ID_Servicio
+    GROUP BY s.Nombre
+    ORDER BY VecesSolicitado DESC;
+END;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_ListadoTurnos
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        t.ID_Turno,
+        t.Fecha,
+        t.Hora,
+        t.Estado,
+        c.Nombre,
+        c.Apellido,
+        c.Telefono,
+        v.Patente,
+        v.Marca,
+        v.Modelo,
+        STRING_AGG(s.Nombre, ', ') AS Servicios,
+        SUM(d.Subtotal) AS Total
+    FROM dbo.Turnos t
+    INNER JOIN dbo.Vehiculos v
+        ON t.ID_Vehiculo = v.ID_Vehiculo
+    INNER JOIN dbo.Clientes c
+        ON v.ID_Cliente = c.ID_Cliente
+    LEFT JOIN dbo.DetalleTurno d
+        ON t.ID_Turno = d.ID_Turno
+    LEFT JOIN dbo.Servicios s
+        ON d.ID_Servicio = s.ID_Servicio
+    GROUP BY
+        t.ID_Turno,
+        t.Fecha,
+        t.Hora,
+        t.Estado,
+        c.Nombre,
+        c.Apellido,
+        c.Telefono,
+        v.Patente,
+        v.Marca,
+        v.Modelo
+    ORDER BY t.Fecha DESC, t.Hora DESC;
+END;
+GO
+
+
+CREATE OR ALTER PROCEDURE dbo.sp_CambiarEstadoTurno
+    @ID_Turno INT,
+    @Estado VARCHAR(20)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF @Estado IS NULL OR @Estado NOT IN (
+        'Pendiente',
+        'Confirmado',
+        'EnProceso',
+        'Finalizado',
+        'Cancelado'
+    )
+    BEGIN
+        RAISERROR('Estado no valido.', 16, 1);
+        RETURN;
+    END;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM dbo.Turnos
+        WHERE ID_Turno = @ID_Turno
+    )
+    BEGIN
+        RAISERROR('El turno no existe.', 16, 1);
+        RETURN;
+    END;
+
+    UPDATE dbo.Turnos
+    SET Estado = @Estado
+    WHERE ID_Turno = @ID_Turno;
+END;
+GO
 
 /* (si son 3 integrantes, agregar la seccion 6 con el mismo cartel) */

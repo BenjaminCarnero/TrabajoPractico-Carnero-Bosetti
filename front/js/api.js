@@ -15,7 +15,34 @@ async function pedirJson(url, opciones) {
 }
 
 // Las funciones exportadas de cada endpoint van acá, por ejemplo:
+export function obtenerResumenTablero() {
+    return pedirJson(`${API_URL}/estadisticas/resumen`);
+}
 // export function obtenerTurnos() { return pedirJson(`${API_URL}/turnos`); }
+export function obtenerListadoTurnos() {
+    return pedirJson(`${API_URL}/estadisticas/turnos`);
+}
+
+export function actualizarEstadoTurno(idTurno, estado) {
+    return pedirJson(
+        `${API_URL}/estadisticas/turnos/${idTurno}/estado`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ estado })
+        }
+    );
+}
+
+export function obtenerTurnosPorEstado() {
+    return pedirJson(`${API_URL}/estadisticas/turnos-por-estado`);
+}
+
+export function obtenerServiciosMasSolicitados() {
+    return pedirJson(`${API_URL}/estadisticas/servicios-mas-solicitados`);
+}
 
 export function obtenerServiciosActivos() {
     return pedirJson(`${API_URL}/servicios`);
