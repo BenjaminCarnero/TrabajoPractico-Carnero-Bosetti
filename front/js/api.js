@@ -17,3 +17,19 @@ export function obtenerResumenTablero() {
     return pedirJson(`${API_URL}/estadisticas/resumen`);
 }
 // export function obtenerTurnos() { return pedirJson(`${API_URL}/turnos`); }
+export function obtenerListadoTurnos() {
+    return pedirJson(`${API_URL}/estadisticas/turnos`);
+}
+
+export function actualizarEstadoTurno(idTurno, estado) {
+    return pedirJson(
+        `${API_URL}/estadisticas/turnos/${idTurno}/estado`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ estado })
+        }
+    );
+}

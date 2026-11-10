@@ -16,3 +16,31 @@ body { font-family: "Segoe UI", Arial, sans-serif; background-color: #f4f6f8; co
 
 .tabla { width: 100%; border-collapse: collapse; }
 .tabla th, .tabla td { text-align: left; padding: 8px; border-bottom: 1px solid #ddd; }
+
+/* Tabla del tablero */
+.seccion table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+}
+
+.seccion th,
+.seccion td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.seccion th {
+    background-color: #e8eef6;
+    color: #20395e;
+}
+
+.seccion tr:hover {
+    background-color: #f5f7fa;
+}
+
+.seccion {
+    overflow-x: auto;
+}

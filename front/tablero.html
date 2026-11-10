@@ -40,6 +40,50 @@
 </div>
 
             <!-- Acá va el listado con JOIN, la búsqueda con filtros y los botones de cambio de estado. -->
+            
+<h2>Listado de turnos</h2>
+
+<div class="filtros-turnos">
+    <input
+        type="text"
+        id="filtroCliente"
+        placeholder="Buscar por cliente"
+    >
+
+    <input
+        type="text"
+        id="filtroPatente"
+        placeholder="Buscar por patente"
+    >
+
+    <select id="filtroEstado">
+        <option value="">Todos los estados</option>
+        <option value="Pendiente">Pendiente</option>
+        <option value="Confirmado">Confirmado</option>
+        <option value="EnProceso">En proceso</option>
+        <option value="Finalizado">Finalizado</option>
+        <option value="Cancelado">Cancelado</option>
+    </select>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Cliente</th>
+            <th>Patente</th>
+            <th>Vehículo</th>
+            <th>Servicios</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Cambiar estado</th>
+        </tr>
+    </thead>
+    <tbody id="tablaTurnos">
+    </tbody>
+</table>
+ 
         </section>
     </main>
 
