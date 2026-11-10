@@ -1,23 +1,20 @@
+
 import { Router } from "express";
 import {
     consultarResumen,
     consultarListadoTurnos,
-    actualizarEstadoTurno
+    actualizarEstadoTurno,
+    consultarTurnosPorEstado,
+    consultarServiciosMasSolicitados
 } from "../controllers/estadisticas.controllers.js";
 
 const router = Router();
-
-router.get("/turnos-por-estado", (req, res) => {
-    res.json({ mensaje: "Ruta de estados funcionando" });
-});
 
 router.get("/resumen", consultarResumen);
 router.get("/turnos", consultarListadoTurnos);
 router.patch("/turnos/:id/estado", actualizarEstadoTurno);
 
-router.get("/servicios-mas-solicitados", (req, res) => {
-    res.json({ mensaje: "Ruta de servicios funcionando" });
-});
-
+router.get("/turnos-por-estado", consultarTurnosPorEstado);
+router.get("/servicios-mas-solicitados", consultarServiciosMasSolicitados);
 
 export default router;

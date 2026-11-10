@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estadísticas - Nombre del negocio</title>
+    <title>Estadísticas - Lavadero</title>
     <link rel="stylesheet" href="estilos.css">
 </head>
 <body>
@@ -18,8 +19,51 @@
 
     <main class="principal">
         <section class="seccion">
-            <h2>Estadísticas</h2>
-            <!-- Acá va la consulta agregada (GROUP BY) en una tabla legible. -->
+            <h2>Estadísticas del lavadero</h2>
+            <p class="estad-subtitulo">
+                Resumen de turnos y servicios registrados
+            </p>
+
+            <div class="paneles-estadisticas">
+
+                <article class="panel-estadistica panel-estados">
+                    <h3>Distribución de turnos</h3>
+
+                    <div class="estad-resumen">
+                        <div>
+                            <span>Total de turnos</span>
+                            <strong id="totalEstadTurnos">0</strong>
+                        </div>
+                        <div>
+                            <span>Confirmados</span>
+                            <strong id="totalConfirmados">0</strong>
+                        </div>
+                        <div>
+                            <span>Finalizados</span>
+                            <strong id="totalEstadFinalizados">0</strong>
+                        </div>
+                    </div>
+
+                    <h4>Turnos por estado</h4>
+                    <div id="graficoEstados"
+                         class="grafico-columnas"></div>
+                </article>
+
+                <article class="panel-estadistica">
+                    <h3>Reservas por día</h3>
+                    <p class="estad-descripcion">
+                        Últimos 7 días hasta el turno más reciente
+                    </p>
+                    <div id="graficoTendencia"></div>
+                </article>
+
+                <article class="panel-estadistica">
+                    <h3>Servicios más solicitados</h3>
+                    <div id="graficoServicios"
+                         class="grafico-columnas"></div>
+                </article>
+
+            </div>
         </section>
     </main>
 

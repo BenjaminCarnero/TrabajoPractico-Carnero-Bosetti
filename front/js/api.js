@@ -33,3 +33,11 @@ export function actualizarEstadoTurno(idTurno, estado) {
         }
     );
 }
+
+export function obtenerTurnosPorEstado() {
+    return pedirJson(`${API_URL}/estadisticas/turnos-por-estado`);
+}
+
+export function obtenerServiciosMasSolicitados() {
+    return pedirJson(`${API_URL}/estadisticas/servicios-mas-solicitados`);
+}
