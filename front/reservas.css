@@ -1,0 +1,50 @@
+[hidden] { display: none !important; }
+
+.reserva { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+.reserva-pasos { display: flex; flex-direction: column; gap: 20px; }
+
+.reserva label { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; font-weight: 600; }
+.reserva input, .reserva select { font: inherit; font-weight: 400; padding: 8px; border: 1px solid #bbb; border-radius: 6px; }
+.reserva input:focus-visible, .reserva select:focus-visible, .reserva button:focus-visible { outline: 2px solid #1f3a5f; outline-offset: 1px; }
+
+.fila-buscar { display: flex; gap: 10px; align-items: center; }
+.fila-buscar label { flex-direction: row; align-items: center; }
+.fila-buscar input { flex: 1; text-transform: uppercase; max-width: 220px; }
+
+.reserva button { font: inherit; font-weight: 600; padding: 8px 18px; border: 0; border-radius: 6px; background-color: #1f3a5f; color: #fff; cursor: pointer; }
+.reserva button:hover { background-color: #2b4f80; }
+.reserva button:disabled { background-color: #8a97a8; cursor: not-allowed; }
+
+.campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; border: 0; margin-top: 14px; }
+.campos legend { font-weight: 600; margin-bottom: 8px; }
+
+.ficha { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin-top: 14px; padding: 12px; background-color: #eef3f9; border-radius: 8px; }
+.ficha dt { font-weight: 600; }
+
+.aviso { margin-top: 10px; font-size: 0.9rem; color: #555; }
+
+.servicios { display: flex; flex-direction: column; }
+.servicio { display: grid; grid-template-columns: 1fr auto 70px; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #ddd; }
+.servicio:last-child { border-bottom: 0; }
+.servicio-texto { flex-direction: row !important; align-items: center; gap: 10px !important; cursor: pointer; }
+.servicio-texto span { display: flex; flex-direction: column; }
+.servicio-texto small { font-weight: 400; color: #666; }
+.servicio-precio { font-weight: 600; white-space: nowrap; }
+.servicio-cantidad { width: 70px; }
+
+.resumen { position: sticky; top: 16px; }
+.resumen-lista { list-style: none; }
+.resumen-lista li { display: flex; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid #eee; }
+.resumen-total { margin-top: 12px; font-size: 1.2rem; font-weight: 700; }
+.resumen button { width: 100%; margin-top: 16px; }
+
+.mensaje { margin-top: 14px; padding: 10px 12px; border-radius: 6px; font-size: 0.95rem; }
+.mensaje.ok { background-color: #e3f4e6; color: #17612a; }
+.mensaje.error { background-color: #fbe4e4; color: #8a1c1c; }
+
+@media (max-width: 800px) {
+    .reserva { grid-template-columns: 1fr; }
+    .resumen { position: static; }
+    .servicio { grid-template-columns: 1fr 70px; }
+    .servicio-precio { grid-column: 1; }
+}

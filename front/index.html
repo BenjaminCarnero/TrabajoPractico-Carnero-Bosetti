@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Operación principal - Nombre del negocio</title>
+    <title>Reservar turno - Lavadero de Autos</title>
     <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="reservas.css">
 </head>
 <body>
     <header class="encabezado">
-        <h1>Nombre del negocio</h1>
+        <h1>Lavadero de Autos</h1>
         <nav class="menu">
             <a href="index.html" class="activo">Operación</a>
             <a href="tablero.html">Tablero</a>
@@ -17,10 +18,61 @@
     </header>
 
     <main class="principal">
-        <section class="seccion">
-            <h2>Operación principal</h2>
-            <!-- Acá se arma el pedido / turno / reserva, con el resumen en vivo. -->
-        </section>
+        <form id="form-reserva" class="reserva" novalidate>
+            <div class="reserva-pasos">
+                <section class="seccion">
+                    <h2>1. Vehículo</h2>
+                    <div class="fila-buscar">
+                        <label for="patente">Patente</label>
+                        <input type="text" id="patente" maxlength="10" placeholder="AB123CD" autocomplete="off">
+                        <button type="button" id="boton-buscar">Buscar</button>
+                    </div>
+                    <p id="aviso-patente" class="aviso" hidden></p>
+
+                    <dl id="datos-vehiculo" class="ficha" hidden></dl>
+
+                    <fieldset id="datos-nuevos" class="campos" hidden>
+                        <legend>Cliente y vehículo nuevos</legend>
+                        <label>Nombre <input type="text" id="nombre" maxlength="100"></label>
+                        <label>Apellido <input type="text" id="apellido" maxlength="100"></label>
+                        <label>Teléfono <input type="tel" id="telefono" maxlength="20"></label>
+                        <label>Email (opcional) <input type="email" id="email" maxlength="100"></label>
+                        <label>Marca <input type="text" id="marca" maxlength="50"></label>
+                        <label>Modelo <input type="text" id="modelo" maxlength="50"></label>
+                        <label>Tipo de vehículo
+                            <select id="tipo-vehiculo">
+                                <option value="Auto">Auto</option>
+                                <option value="Camioneta">Camioneta</option>
+                                <option value="Utilitario">Utilitario</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </label>
+                    </fieldset>
+                </section>
+
+                <section class="seccion">
+                    <h2>2. Servicios</h2>
+                    <div id="lista-servicios" class="servicios">
+                        <p class="aviso">Cargando servicios...</p>
+                    </div>
+                </section>
+
+                <section class="seccion">
+                    <h2>3. Fecha y hora</h2>
+                    <div class="campos">
+                        <label>Fecha <input type="date" id="fecha"></label>
+                        <label>Hora <input type="time" id="hora"></label>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="seccion resumen">
+                <h2>Resumen del turno</h2>
+                <div id="resumen"></div>
+                <p id="mensaje" class="mensaje" role="alert" hidden></p>
+                <button type="submit" id="boton-reservar">Reservar turno</button>
+            </aside>
+        </form>
     </main>
 
     <script type="module" src="js/index.js"></script>
