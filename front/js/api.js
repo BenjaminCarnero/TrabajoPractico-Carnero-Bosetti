@@ -6,7 +6,9 @@ async function pedirJson(url, opciones) {
     const datos = await respuesta.json();
 
     if (!respuesta.ok) {
-        throw new Error(datos.mensaje || "Error al comunicarse con la API.");
+        const error = new Error(datos.mensaje || "Error al comunicarse con la API.");
+        error.estado = respuesta.status;
+        throw error;
     }
 
     return datos;
@@ -40,4 +42,20 @@ export function obtenerTurnosPorEstado() {
 
 export function obtenerServiciosMasSolicitados() {
     return pedirJson(`${API_URL}/estadisticas/servicios-mas-solicitados`);
+}
+
+export function obtenerServiciosActivos() {
+    return pedirJson(`${API_URL}/servicios`);
+}
+
+export function buscarVehiculo(patente) {
+    return pedirJson(`${API_URL}/vehiculos/${encodeURIComponent(patente)}`);
+}
+
+export function crearTurno(reserva) {
+    return pedirJson(`${API_URL}/turnos`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(reserva)
+    });
 }

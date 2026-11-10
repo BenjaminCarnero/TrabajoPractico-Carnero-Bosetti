@@ -21,4 +21,6 @@ Sistema web para Reservas De Lavadero de Autos. Trabajo Final Integrador — Pro
 
 | Método | Ruta | Descripción | Éxito | Errores |
 |---|---|---|---|---|
-| | | | | |
+| GET | `/api/servicios` | Lista los servicios activos | 200 | |
+| GET | `/api/vehiculos/:patente` | Vehículo con los datos de su cliente | 200 | 404 patente no registrada |
+| POST | `/api/turnos` | Crea el turno con su detalle; si la patente es nueva crea también cliente y vehículo | 201 | 400 datos inválidos, fecha pasada, servicio inactivo o turno repetido |

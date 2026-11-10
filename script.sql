@@ -191,6 +191,167 @@ GO
 /* 4. SPs DE RESERVAS (dueño: Carnero)                */
 /* ================================================== */
 
+CREATE OR ALTER PROCEDURE dbo.sp_Servicios_ListarActivos
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT ID_Servicio, Nombre, Descripcion, Precio, DuracionMinutos
+    FROM dbo.Servicios
+    WHERE Activo = 1
+    ORDER BY Nombre;
+END;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Vehiculos_BuscarPorPatente
+    @Patente VARCHAR(10)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SET @Patente = UPPER(REPLACE(LTRIM(RTRIM(@Patente)), ' ', ''));
+
+    IF NOT EXISTS (SELECT 1 FROM dbo.Vehiculos WHERE Patente = @Patente)
+    BEGIN
+        THROW 50404, N'No hay ningún vehículo registrado con esa patente.', 1;
+    END;
+
+    SELECT v.ID_Vehiculo, v.Patente, v.Marca, v.Modelo, v.TipoVehiculo,
+           c.ID_Cliente, c.Nombre, c.Apellido, c.Telefono, c.Email
+    FROM dbo.Vehiculos v
+    INNER JOIN dbo.Clientes c ON c.ID_Cliente = v.ID_Cliente
+    WHERE v.Patente = @Patente;
+END;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_Turnos_Crear
+    @Patente      VARCHAR(10),
+    @Fecha        DATE,
+    @Hora         TIME(0),
+    @Servicios    NVARCHAR(MAX),
+    @Nombre       VARCHAR(100) = NULL,
+    @Apellido     VARCHAR(100) = NULL,
+    @Telefono     VARCHAR(20)  = NULL,
+    @Email        VARCHAR(100) = NULL,
+    @Marca        VARCHAR(50)  = NULL,
+    @Modelo       VARCHAR(50)  = NULL,
+    @TipoVehiculo VARCHAR(30)  = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    SET @Patente = UPPER(REPLACE(LTRIM(RTRIM(ISNULL(@Patente, ''))), ' ', ''));
+
+    IF @Patente = ''
+        THROW 50001, N'La patente es obligatoria.', 1;
+
+    IF @Fecha IS NULL OR @Hora IS NULL
+        THROW 50002, N'La fecha y la hora son obligatorias.', 1;
+
+    IF DATEADD(SECOND, DATEDIFF(SECOND, CAST('00:00:00' AS TIME(0)), @Hora), CAST(@Fecha AS DATETIME2(0))) < SYSDATETIME()
+        THROW 50003, N'No se puede reservar un turno en una fecha u hora pasada.', 1;
+
+    IF ISJSON(@Servicios) <> 1
+        THROW 50004, N'Hay que elegir al menos un servicio.', 1;
+
+    DECLARE @Detalle TABLE (ID_Servicio INT PRIMARY KEY, Cantidad INT NOT NULL);
+
+    INSERT INTO @Detalle (ID_Servicio, Cantidad)
+    SELECT idServicio, SUM(ISNULL(cantidad, 0))
+    FROM OPENJSON(@Servicios)
+         WITH (idServicio INT '$.idServicio', cantidad INT '$.cantidad')
+    WHERE idServicio IS NOT NULL
+    GROUP BY idServicio;
+
+    IF NOT EXISTS (SELECT 1 FROM @Detalle)
+        THROW 50004, N'Hay que elegir al menos un servicio.', 1;
+
+    IF EXISTS (SELECT 1 FROM @Detalle WHERE Cantidad <= 0)
+        THROW 50005, N'La cantidad de cada servicio tiene que ser mayor a cero.', 1;
+
+    IF EXISTS (
+        SELECT 1
+        FROM @Detalle d
+        LEFT JOIN dbo.Servicios s ON s.ID_Servicio = d.ID_Servicio AND s.Activo = 1
+        WHERE s.ID_Servicio IS NULL
+    )
+        THROW 50006, N'Alguno de los servicios elegidos no existe o no está activo.', 1;
+
+    BEGIN TRY
+        BEGIN TRANSACTION;
+
+        DECLARE @ID_Vehiculo INT, @ID_Cliente INT, @ID_Turno INT;
+
+        SELECT @ID_Vehiculo = ID_Vehiculo
+        FROM dbo.Vehiculos WITH (UPDLOCK, HOLDLOCK)
+        WHERE Patente = @Patente;
+
+        IF @ID_Vehiculo IS NULL
+        BEGIN
+            SET @Nombre       = NULLIF(LTRIM(RTRIM(@Nombre)), '');
+            SET @Apellido     = NULLIF(LTRIM(RTRIM(@Apellido)), '');
+            SET @Telefono     = NULLIF(LTRIM(RTRIM(@Telefono)), '');
+            SET @Email        = NULLIF(LTRIM(RTRIM(@Email)), '');
+            SET @Marca        = NULLIF(LTRIM(RTRIM(@Marca)), '');
+            SET @Modelo       = NULLIF(LTRIM(RTRIM(@Modelo)), '');
+            SET @TipoVehiculo = NULLIF(LTRIM(RTRIM(@TipoVehiculo)), '');
+
+            IF @Nombre IS NULL OR @Apellido IS NULL OR @Telefono IS NULL
+               OR @Marca IS NULL OR @Modelo IS NULL OR @TipoVehiculo IS NULL
+                THROW 50007, N'La patente es nueva: completá nombre, apellido, teléfono, marca, modelo y tipo de vehículo.', 1;
+
+            SELECT @ID_Cliente = MIN(ID_Cliente)
+            FROM dbo.Clientes WITH (UPDLOCK, HOLDLOCK)
+            WHERE Nombre = @Nombre AND Apellido = @Apellido AND Telefono = @Telefono;
+
+            IF @ID_Cliente IS NULL
+            BEGIN
+                INSERT INTO dbo.Clientes (Nombre, Apellido, Telefono, Email)
+                VALUES (@Nombre, @Apellido, @Telefono, @Email);
+
+                SET @ID_Cliente = SCOPE_IDENTITY();
+            END;
+
+            INSERT INTO dbo.Vehiculos (ID_Cliente, Patente, Marca, Modelo, TipoVehiculo)
+            VALUES (@ID_Cliente, @Patente, @Marca, @Modelo, @TipoVehiculo);
+
+            SET @ID_Vehiculo = SCOPE_IDENTITY();
+        END;
+
+        IF EXISTS (
+            SELECT 1 FROM dbo.Turnos
+            WHERE ID_Vehiculo = @ID_Vehiculo AND Fecha = @Fecha AND Hora = @Hora AND Estado <> 'Cancelado'
+        )
+            THROW 50008, N'Ese vehículo ya tiene un turno reservado en esa fecha y hora.', 1;
+
+        INSERT INTO dbo.Turnos (ID_Vehiculo, Fecha, Hora)
+        VALUES (@ID_Vehiculo, @Fecha, @Hora);
+
+        SET @ID_Turno = SCOPE_IDENTITY();
+
+        INSERT INTO dbo.DetalleTurno (ID_Turno, ID_Servicio, Cantidad, PrecioUnitario)
+        SELECT @ID_Turno, d.ID_Servicio, d.Cantidad, s.Precio
+        FROM @Detalle d
+        INNER JOIN dbo.Servicios s ON s.ID_Servicio = d.ID_Servicio;
+
+        COMMIT TRANSACTION;
+
+        SELECT t.ID_Turno, CONVERT(CHAR(10), t.Fecha, 23) AS Fecha, CONVERT(CHAR(5), t.Hora, 108) AS Hora, t.Estado, v.Patente,
+               (SELECT SUM(Subtotal) FROM dbo.DetalleTurno WHERE ID_Turno = t.ID_Turno) AS Total
+        FROM dbo.Turnos t
+        INNER JOIN dbo.Vehiculos v ON v.ID_Vehiculo = t.ID_Vehiculo
+        WHERE t.ID_Turno = @ID_Turno;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        THROW;
+    END CATCH;
+END;
+GO
+
 
 /* ================================================== */
 /* 5. SPs DE TABLERO Y ESTADISTICAS (dueño: Bosetti)  */
